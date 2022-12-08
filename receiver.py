@@ -2,18 +2,18 @@ import socketserver
 from socket import SOL_SOCKET, SO_REUSEPORT
 
 class HL7Message:
-	def __init__(self, msg=''):
-		self.msg = msg
-		self.segments = {}
+    def __init__(self, msg=''):
+        self.msg = msg
+        self.segments = {}
 
-	def parse(self):
-		self.segments = dict(zip([segment.split('|')[0] for segment in self.msg], [segment.split('|')[1:] for segment in self.msg]))
-		self.segments['MSH'].insert(0, '|')
+    def parse(self):
+        self.segments = dict(zip([segment.split('|')[0] for segment in self.msg], [segment.split('|')[1:] for segment in self.msg]))
+        self.segments['MSH'].insert(0, '|')
 
-		for key in self.segments:
-			self.segments[key].insert(0, None)
+        for key in self.segments:
+            self.segments[key].insert(0, None)
 
-		return self.segments
+        return self.segments
 
 class MLLPHandler(socketserver.BaseRequestHandler):
     def handle(self):
