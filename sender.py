@@ -13,5 +13,5 @@ with socket.create_connection(('127.0.0.1', 2100)) as s:
     hl7_msg += '\x1c'
     hl7_msg += '\r'
     s.send(hl7_msg.encode('utf-8'))
-    answer = s.recv(4096)
+    answer = s.recv(4096).decode('utf-8')
     print(answer)
