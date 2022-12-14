@@ -17,7 +17,11 @@ class HL7Message:
         self.msg = msg
         self.segments = {}
 
+    def __str__(self):
+        return self.msg
+
     def parse(self):
+        self.msg = self.msg.splitlines()[1:]
         self.segments = dict(zip([segment.split('|')[0] for segment in self.msg], [segment.split('|')[1:] for segment in self.msg]))
         self.segments['MSH'].insert(0, '|')
 
@@ -36,12 +40,10 @@ class MLLPHandler(socketserver.BaseRequestHandler):
             self.data = self.request.recv(4096)
             if not self.data:
                 break
-            if self.data.decode('utf-8')[0:1] == '\x0b':
-                hl7_message = HL7Message()
-                hl7_message.msg = self.data.decode('utf-8')
-            if self.data.decode('utf-8')[0:5] == '\x1c\r':
-                hl7_message.msg = hl7_message.msg.splitlines()[1:]
-                print(f"Получено сообщение от {self.client_address[0]}: {hl7_message.msg}")
+            if self.data[0:1] == b'\x0b':  # Начало блока
+                hl7_message = HL7Message(self.data.decode('utf-8'))  # Считываем полезную нагрузку
+            if self.data[0:2] == b'\x1c\r':  # Конец блока
+                print(f"Получено сообщение от {self.client_address[0]}")
 
                 try:
                     hl7_data = hl7_message.parse()
