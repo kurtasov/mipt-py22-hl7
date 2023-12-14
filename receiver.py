@@ -47,8 +47,8 @@ class MLLPHandler(socketserver.BaseRequestHandler):
 
                 try:
                     hl7_data = hl7_message.parse()
-                except:  # TODO: Реализовать обработку ошибок
-                    print("Ошибка парсинга сообщения")
+                except Exception as e:  # TODO: Реализовать обработку ошибок
+                    print(f"Ошибка парсинга сообщения: {e}")
                 else:
                     self.request.sendall(hl7_message.generate_ack().encode('utf-8'))
                     pt = Patient(hl7_data)
